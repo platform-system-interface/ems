@@ -94,16 +94,23 @@ fn main() -> io::Result<()> {
                 println!("{o:08x}: {r:#x?}");
             }
             if s.starts_with(edk2::PROTOCOL_ENTRY) {
-                println!("{o:08x}: protocol entry");
+                let r = edk2::ProtocolEntry::read_from_prefix(buf).unwrap();
+                println!("{o:08x}: {r:#x?}");
             }
             if s.starts_with(edk2::PROTOCOL_INTERFACE) {
-                println!("{o:08x}: protocol interface");
+                f.seek(SeekFrom::Start(o))?;
+                let buf = &mut [0u8; 32];
+                let _ = f.read(buf);
+                let r = edk2::ProtocolInterface::read_from_prefix(buf).unwrap();
+                println!("{o:08x}: {r:#x?}");
             }
             if s.starts_with(edk2::OPEN_PROTOCOL_DATA) {
-                println!("{o:08x}: open protocol data");
+                let r = edk2::OpenProtocolData::read_from_prefix(buf).unwrap();
+                println!("{o:08x}: {r:#x?}");
             }
             if s.starts_with(edk2::PROTOCOL_NOTIFY) {
-                println!("{o:08x}: protocol notify");
+                let r = edk2::ProtocolNotify::read_from_prefix(buf).unwrap();
+                println!("{o:08x}: {r:#x?}");
             }
 
             if s.starts_with(edk2::EVENT) {

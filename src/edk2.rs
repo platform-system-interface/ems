@@ -116,6 +116,50 @@ pub struct Handle {
     key: u64,
 }
 
+#[derive(AsBytes, FromBytes, FromZeroes, Clone, Copy, Debug)]
+#[repr(C)]
+pub struct ProtocolEntry {
+    signature: [u8; 4],
+    all_entries: u32,
+    protocol_id: u32,
+    protocols: u32,
+    notify: u32,
+}
+
+#[derive(AsBytes, FromBytes, FromZeroes, Clone, Copy, Debug)]
+#[repr(C)]
+pub struct ProtocolInterface {
+    signature: [u8; 4],
+    link: u32,
+    handle: u32,
+    by_protocol: u32,
+    protocol: u32,
+    interface: u32,
+    open_list: u32,
+    open_list_count: u32,
+}
+
+#[derive(AsBytes, FromBytes, FromZeroes, Clone, Copy, Debug)]
+#[repr(C)]
+pub struct OpenProtocolData {
+    signature: [u8; 4],
+    link: u32,
+    agent_handle: u32,
+    controller_handle: u32,
+    attributes: u32,
+    open_count: u32,
+}
+
+#[derive(AsBytes, FromBytes, FromZeroes, Clone, Copy, Debug)]
+#[repr(C)]
+pub struct ProtocolNotify {
+    signature: [u8; 4],
+    protocol: u32,
+    link: u32,
+    event: u32,
+    position: u32,
+}
+
 // MdeModulePkg/Core/Dxe/Event/Event.h
 
 pub const EVENT: &str = "evnt";
