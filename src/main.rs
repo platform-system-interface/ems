@@ -90,7 +90,8 @@ fn main() -> io::Result<()> {
             }
 
             if s.starts_with(edk2::EFI_HANDLE) {
-                println!("{o:08x}: EFI handle");
+                let r = edk2::Handle::read_from_prefix(buf).unwrap();
+                println!("{o:08x}: {r:#x?}");
             }
             if s.starts_with(edk2::PROTOCOL_ENTRY) {
                 println!("{o:08x}: protocol entry");
@@ -103,6 +104,14 @@ fn main() -> io::Result<()> {
             }
             if s.starts_with(edk2::PROTOCOL_NOTIFY) {
                 println!("{o:08x}: protocol notify");
+            }
+
+            if s.starts_with(edk2::EVENT) {
+                f.seek(SeekFrom::Start(o))?;
+                let buf = &mut [0u8; 50];
+                let _ = f.read(buf);
+                let r = edk2::Event::read_from_prefix(buf).unwrap();
+                println!("{o:08x}: {r:#x?}");
             }
         }
     }

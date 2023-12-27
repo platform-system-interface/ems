@@ -52,14 +52,6 @@ pub const POOLPAGE_HEAD: &str = "phd1";
 pub const POOL_TAIL: &str = "ptal";
 pub const POOL: &str = "plst";
 
-// https://github.com/tianocore/edk2/blob/5d533bbc27732a421e3bf35c5af77782b8a85e6f/MdeModulePkg/Core/Dxe/Hand/Handle.h#L47
-
-pub const EFI_HANDLE: &str = "hndl";
-pub const PROTOCOL_ENTRY: &str = "prte";
-pub const PROTOCOL_INTERFACE: &str = "pifc";
-pub const OPEN_PROTOCOL_DATA: &str = "podl";
-pub const PROTOCOL_NOTIFY: &str = "prtn";
-
 #[derive(AsBytes, FromBytes, FromZeroes, Clone, Copy, Debug)]
 #[repr(C)]
 pub struct PoolFree {
@@ -104,4 +96,43 @@ pub struct Pool {
     mem_type: u32,
     free_list: u32,
     link: u32,
+}
+
+// https://github.com/tianocore/edk2/blob/5d533bbc27732a421e3bf35c5af77782b8a85e6f/MdeModulePkg/Core/Dxe/Hand/Handle.h#L47
+
+pub const EFI_HANDLE: &str = "hndl";
+pub const PROTOCOL_ENTRY: &str = "prte";
+pub const PROTOCOL_INTERFACE: &str = "pifc";
+pub const OPEN_PROTOCOL_DATA: &str = "podl";
+pub const PROTOCOL_NOTIFY: &str = "prtn";
+
+#[derive(AsBytes, FromBytes, FromZeroes, Clone, Copy, Debug)]
+#[repr(C)]
+pub struct Handle {
+    signature: [u8; 4],
+    all_handles: u32,
+    protocols: u32,
+    locate_request: u32,
+    key: u64,
+}
+
+// MdeModulePkg/Core/Dxe/Event/Event.h
+
+pub const EVENT: &str = "evnt";
+
+#[derive(AsBytes, FromBytes, FromZeroes, Clone, Copy, Debug)]
+#[repr(C)]
+pub struct Event {
+    signature: [u8; 4],
+    event_type: u32,
+    signal_count: u32,
+    signal_link: u32,
+    notify_tpl: u32,      // ?
+    notify_function: u32, // ?
+    notify_context: u32,  // ?
+    event_group: u32,     // ?
+    notify_link: u32,     // ?
+    ex_flag: u32,         // ?
+    runtime_data: u32,    // ?
+    timer: u32,           // ?
 }
