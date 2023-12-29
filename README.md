@@ -39,6 +39,27 @@ Put the resulting file on a USB drive or copy it over network to continue.
 
 Rerun `ems` with `--file` again, passing the path to your copy.
 
+## Linux
+
+You will need a kernel with specific settings to fully access `/dev/mem`.
+To build your own, copy the file `linux_ems_defconfig` to your Linux tree in
+the config directory as `arch/x86/configs/ems_defconfig`. For non-x86
+architectures, adjust as necessary.
+
+The configuration expects an initramfs. Pick your own or get one from
+<https://github.com/linuxboot/u-root-builder> as you like. Add the `ems` command
+to your custom initramfs or load it through your preferred mechanism later.
+
+Build the kernel with the defconfig:
+
+```sh
+make ems_defconfig
+make -j8
+```
+
+The resulting `arch/x86/boot/bzImage` is a PE32 binary that you can put on a FAT
+partition on a GPT partitioned USB drive at `EFI/BOOT/BOOTX64.EFI`.
+
 ## TODO
 
 - [ ] pass the `--base` to resolve references/links
