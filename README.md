@@ -8,6 +8,17 @@ Scan for memory data structures as known from UEFI PI firmware, i.e.,
 You can access EFI memory e.g. using a Linux kernel with full access to
 `/dev/mem`.
 
+## Build
+
+Run `make` to build a statically linked release binary.
+
+To run the command directly with arguments, you need to explicitly pass
+`--target x86_64-unknown-linux-gnu` and put arguments behind a `--`:
+
+```sh
+cargo run --release --target x86_64-unknown-linux-gnu -- -f memdump
+```
+
 ## Strategy
 
 Invoke `ems --file /dev/mem` to locate occurrences of known EFI data
