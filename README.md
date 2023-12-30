@@ -62,5 +62,4 @@ partition on a GPT partitioned USB drive at `EFI/BOOT/BOOTX64.EFI`.
 
 ## TODO
 
-- [ ] pass the `--base` to resolve references/links
 - [ ] reconstruct the memory to access the data

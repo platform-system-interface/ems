@@ -21,6 +21,10 @@ struct Args {
     #[arg(short, long, default_value_t = 0, value_parser=maybe_hex::<u64>)]
     offset: u64,
 
+    /// Offset
+    #[arg(short, long, default_value_t = 0, value_parser=maybe_hex::<u64>)]
+    base: u64,
+
     /// Limit
     #[arg(short, long, default_value_t = 4096, value_parser=maybe_hex::<u64>)]
     limit: u64,
@@ -34,9 +38,20 @@ struct Args {
     pattern: String,
 }
 
+fn dump(f: &mut File, size: u64, base: u64, addr: u64, name: &str) {
+    let pos = addr - base;
+    if pos < size {
+        f.seek(SeekFrom::Start(pos)).unwrap();
+        let b = &mut [0u8; 8];
+        let _ = f.read(b);
+        println!("  {name}: {b:#x?}");
+    }
+}
+
 fn main() -> io::Result<()> {
     let args = Args::parse();
     let offset = args.offset;
+    let base = args.base;
     let limit = args.limit;
     let file = args.file;
     let pattern = args.pattern;
@@ -56,61 +71,61 @@ fn main() -> io::Result<()> {
         let _ = f.read(buf);
         if let Ok(s) = std::str::from_utf8(&buf[..8]) {
             if s.starts_with(p) {
-                println!("{o:08x}: {s:?}");
+                println!("{o:08x} ({:08x}): {s:?}", o + base);
             }
             if s.starts_with(edk2::RUNTSERV) {
                 f.seek(SeekFrom::Start(o))?;
                 let buf = &mut [0u8; 88];
                 let _ = f.read(buf);
                 let r = edk2::RuntServ::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
         }
 
         if let Ok(s) = std::str::from_utf8(&buf[..4]) {
             if s.starts_with(edk2::POOL_FREE) {
                 let r = PoolFree::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
             if s.starts_with(edk2::POOL_HEAD) {
                 let r = PoolHead::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
             if s.starts_with(edk2::POOLPAGE_HEAD) {
                 let r = edk2::PoolPageHead::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
             if s.starts_with(edk2::POOL_TAIL) {
                 let r = edk2::PoolTail::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
             if s.starts_with(edk2::POOL) {
                 let r = edk2::Pool::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
 
             if s.starts_with(edk2::EFI_HANDLE) {
                 let r = edk2::Handle::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
             if s.starts_with(edk2::PROTOCOL_ENTRY) {
                 let r = edk2::ProtocolEntry::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
             if s.starts_with(edk2::PROTOCOL_INTERFACE) {
                 f.seek(SeekFrom::Start(o))?;
                 let buf = &mut [0u8; 32];
                 let _ = f.read(buf);
                 let r = edk2::ProtocolInterface::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
             if s.starts_with(edk2::OPEN_PROTOCOL_DATA) {
                 let r = edk2::OpenProtocolData::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
             if s.starts_with(edk2::PROTOCOL_NOTIFY) {
                 let r = edk2::ProtocolNotify::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
 
             if s.starts_with(edk2::EVENT) {
@@ -118,7 +133,7 @@ fn main() -> io::Result<()> {
                 let buf = &mut [0u8; 50];
                 let _ = f.read(buf);
                 let r = edk2::Event::read_from_prefix(buf).unwrap();
-                println!("{o:08x}: {r:#x?}");
+                println!("{o:08x} ({:08x}): {r:#x?}", o + base);
             }
         }
     }
